@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "error-stack-parser": "^2.0.1"
+  }
+}
