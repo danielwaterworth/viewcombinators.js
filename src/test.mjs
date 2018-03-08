@@ -6,7 +6,7 @@ group('stackToMap', () => {
   driver('1', console => {
     let events = new Input(new RStack([]));
     events.applyChanges([
-      {'type': 'push', 'value': new RValue(['foo', 'bar'])}
+      {'type': 'push', 'value': {'type': 'value', 'value': ['foo', 'bar']}}
     ]);
 
     let transformed =
@@ -14,11 +14,11 @@ group('stackToMap', () => {
 
     console.log(transformed.getValue());
     events.applyChanges([
-      {'type': 'push', 'value': new RValue(['foo', 'baz'])}
+      {'type': 'push', 'value': {'type': 'value', 'value': ['foo', 'baz']}}
     ]);
     console.log(transformed.getValue());
     events.applyChanges([
-      {'type': 'push', 'value': new RValue(['bar', 'baz'])}
+      {'type': 'pop'}
     ]);
     console.log(transformed.getValue());
   });
@@ -28,6 +28,7 @@ group('makeReactive', () => {
   driver('value', console => {
     let value = view.makeReactive({'type': 'value', 'value': 5});
     console.log(value);
+    console.log(value.toDescriptor());
   });
 
   driver('stack', console => {
@@ -39,6 +40,7 @@ group('makeReactive', () => {
         ]
       });
     console.log(value);
+    console.log(value.toDescriptor());
   });
 
   driver('map', console => {
@@ -50,6 +52,7 @@ group('makeReactive', () => {
         ])
       });
     console.log(value);
+    console.log(value.toDescriptor());
   });
 });
 

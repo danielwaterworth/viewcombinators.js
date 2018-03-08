@@ -1,3 +1,4 @@
 [
-    "RMap { value: Map { 'foo' => RValue { value: 4 } } }"
+    "RMap { value: Map { 'foo' => RValue { value: 4 } } }",
+    "{ type: 'map',\n  items: Map { 'foo' => { type: 'value', value: 4 } } }"
 ]

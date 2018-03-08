@@ -1,3 +1,4 @@
 [
-    "RStack { value: [ RValue { value: 5 } ] }"
+    "RStack { value: [ RValue { value: 5 } ] }",
+    "{ type: 'stack', items: [ { type: 'value', value: 5 } ] }"
 ]

@@ -21,6 +21,9 @@ function register(name, f) {
 }
 
 export function makeReactive(desc) {
+  if (desc.type === undefined) {
+    throw new Error("not a descriptor");
+  }
   return constructors.get(desc.type)(desc);
 }
 
@@ -36,6 +39,13 @@ export class RValue {
   copy() {
     return new RValue(this.value);
   }
+
+  toDescriptor() {
+    return {
+      'type': 'value',
+      'value': this.value
+    }
+  }
 }
 
 register('value', desc => {
@@ -50,7 +60,7 @@ export class RStack {
   applyChanges(changes) {
     for (let change of changes) {
       if (change.type == 'push') {
-        this.value.push(change.value);
+        this.value.push(makeReactive(change.value));
       } else if (change.type == 'pop') {
         this.value.pop();
       } else if (change.type == 'modify') {
@@ -65,6 +75,13 @@ export class RStack {
 
   copy() {
     return new RStack(this.value.map(x => x.copy()));
+  }
+
+  toDescriptor() {
+    return {
+      'type': 'stack',
+      'items': this.value.map(x => x.toDescriptor())
+    }
   }
 }
 
@@ -81,7 +98,7 @@ export class RMap {
   applyChanges(changes) {
     for (let change of changes) {
       if (change.type == 'set') {
-        this.value.set(change.key, change.value);
+        this.value.set(change.key, makeReactive(change.value));
       } else if (change.type == 'modify') {
         this.value.get(change.key).applyChanges(change.valueChanges);
       } else if (change.type == 'delete') {
@@ -100,6 +117,13 @@ export class RMap {
 
   copy() {
     return new RMap(new Map(this.value.entries()));
+  }
+
+  toDescriptor() {
+    return {
+      'type': 'map',
+      'items': new Map(mapIterator(this.value.entries(), ([key, value]) => [key, value.toDescriptor()]))
+    }
   }
 }
 
@@ -214,7 +238,8 @@ export class TransformStackValues {
     let outputChanges = [];
     for (let change of changes[0]) {
       if (change.type == 'push') {
-        this.transforms.push(this.transformation([change.value]));
+        let initial = makeReactive(change.value);
+        this.transforms.push(this.transformation([initial]));
         outputChanges.push({
           'type': 'push',
           'value': last(this.transforms).getValue()
@@ -335,11 +360,11 @@ export class StackToMap {
     let outputChange = {
       'type': 'set',
       'key': key,
-      'value': new RValue(value)
+      'value': {'type': 'value', 'value': value}
     }
     this.value.applyChanges([outputChange]);
     this.inputStack.applyChanges([
-      {'type': 'push', 'value': new RValue(record)}
+      {'type': 'push', 'value': {'type': 'value', 'value': record}}
     ]);
     return outputChange;
   }
@@ -355,7 +380,7 @@ export class StackToMap {
       outputChange = {
         'type': 'set',
         'key': key,
-        'value': value
+        'value': value.toDescriptor()
       }
     } else {
       outputChange = {

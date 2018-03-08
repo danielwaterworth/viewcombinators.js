@@ -1,3 +1,4 @@
 [
-    "RValue { value: 5 }"
+    "RValue { value: 5 }",
+    "{ type: 'value', value: 5 }"
 ]
