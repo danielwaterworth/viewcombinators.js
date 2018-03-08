@@ -1,6 +1,49 @@
+'use strict';
+
+import util from 'util';
+import fs from 'fs';
+import JsDiff from 'diff';
+import chalk from 'chalk';
 import errorStackParser from 'error-stack-parser';
 
+class Output {
+  constructor(display) {
+    this.display = display;
+    this.outputs = [];
+  }
+
+  log() {
+    let output = util.format.apply(null, arguments);
+    this.outputs.push(output);
+    if (this.display) {
+      console.log(output);
+    }
+  }
+
+  asJson() {
+    return JSON.stringify(this.outputs, null, 4) + '\n';
+  }
+
+  check(file) {
+    let contents = fs.readFileSync(file).toString();
+    let expected = this.asJson();
+    if (contents !== expected) {
+      let diff = JsDiff.diffLines(contents, expected);
+      console.log(chalk.blue(file + ':'));
+      diff.forEach(function(part) {
+        var color = part.added ? 'green' : part.removed ? 'red' : 'grey';
+        process.stdout.write(chalk[color](part.value));
+      });
+    }
+  }
+
+  record(file) {
+    fs.writeFileSync(file, this.asJson());
+  }
+}
+
 let points = new Map();
+let drivers = [];
 
 function insertPoint(key, value) {
   if (points.has(key)) {
@@ -21,21 +64,49 @@ function callerFileAndLineNumber() {
 
 export function driver(name, f) {
   let [file, line] = callerFileAndLineNumber();
-  insertPoint(line.toString(), f);
-  insertPoint(file, f);
-  insertPoint(file + ':' + line, f);
+  let value = [name, f];
+  insertPoint(line.toString(), value);
+  insertPoint(file, value);
+  insertPoint(file + ':' + line, value);
   let fileName = last(file.split('/'));
-  insertPoint(fileName, f);
-  insertPoint(fileName + ':' + line, f);
-  insertPoint(name, f);
+  insertPoint(fileName, value);
+  insertPoint(fileName + ':' + line, value);
+  insertPoint(name, value);
+  drivers.push(value);
 }
 
 export function entry() {
-  let key = last(process.argv);
-  if (points.has(key)) {
-    points.get(last(process.argv))();
+  let args = process.argv.slice(2);
+  let mode = args[0];
+
+  let key = args[1];
+  if (key == 'all') {
+    for (let [name, f] of drivers) {
+      if (mode == 'observe') {
+        console.log(chalk.blue(name + ':'));
+      }
+      let output = new Output(mode == 'observe');
+      f(output);
+      let fileName = 'expectations/' + name + '.json';
+      if (mode == 'record') {
+        output.record(fileName);
+      } else if (mode == 'check') {
+        output.check(fileName);
+      }
+    }
   } else {
-    console.error('no such driver');
+    if (points.has(key)) {
+      let [name, f] = points.get(key);
+      let output = new Output(mode == 'observe');
+      f(output);
+      let fileName = 'expectations/' + name + '.json';
+      if (mode == 'record') {
+        output.record(fileName);
+      } else if (mode == 'check') {
+        output.check(fileName);
+      }
+    } else {
+      console.error('no such driver');
+    }
   }
 }
-

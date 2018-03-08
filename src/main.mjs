@@ -4,6 +4,26 @@ function last(arr) {
   return arr[arr.length - 1];
 }
 
+function* mapIterator(iterator, mapping) {
+  while (true) {
+    let result = iterator.next();
+    if (result.done) {
+      break;
+    }
+    yield mapping(result.value);
+  }
+}
+
+let constructors = new Map();
+
+function register(name, f) {
+  constructors.set(name, f);
+}
+
+export function makeReactive(desc) {
+  return constructors.get(desc.type)(desc);
+}
+
 export class RValue {
   constructor(value) {
     this.value = value;
@@ -17,6 +37,10 @@ export class RValue {
     return new RValue(this.value);
   }
 }
+
+register('value', desc => {
+  return new RValue(desc.value);
+});
 
 export class RStack {
   constructor(value) {
@@ -43,6 +67,11 @@ export class RStack {
     return new RStack(this.value.map(x => x.copy()));
   }
 }
+
+register('stack', desc => {
+  let items = desc.items.map(makeReactive);
+  return new RStack(items);
+});
 
 export class RMap {
   constructor(initialValue) {
@@ -74,6 +103,16 @@ export class RMap {
   }
 }
 
+register('map', desc => {
+  let keyedItemDescs =
+    desc.items.entries();
+  let keyedReactives =
+    mapIterator(keyedItemDescs, ([key, value]) => [key, makeReactive(value)]);
+  let items =
+    new Map(keyedReactives)
+  return new RMap(items);
+});
+
 export class RRecord {
   constructor(initialValue) {
     this.value = initialValue;
@@ -93,6 +132,10 @@ export class RRecord {
     return new RMap(new Map(this.value.entries()));
   }
 }
+
+register('record', desc => {
+  
+});
 
 export class Input {
   constructor(value) {

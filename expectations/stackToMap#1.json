@@ -1,0 +1,5 @@
+[
+    "RMap { value: Map { 'foo' => RValue { value: 'bar' } } }",
+    "RMap { value: Map { 'foo' => RValue { value: 'baz' } } }",
+    "RMap {\n  value: \n   Map {\n     'foo' => RValue { value: 'baz' },\n     'bar' => RValue { value: 'baz' } } }"
+]
