@@ -44,6 +44,7 @@ class Output {
 
 let points = new Map();
 let drivers = [];
+let context = [];
 
 function insertPoint(key, value) {
   if (points.has(key)) {
@@ -63,6 +64,7 @@ function callerFileAndLineNumber() {
 }
 
 export function driver(name, f) {
+  name = (context.concat([name])).join(':');
   let [file, line] = callerFileAndLineNumber();
   let value = [name, f];
   insertPoint(line.toString(), value);
@@ -109,4 +111,10 @@ export function entry() {
       console.error('no such driver');
     }
   }
+}
+
+export function group(name, f) {
+  context.push(name);
+  f();
+  context.pop();
 }
