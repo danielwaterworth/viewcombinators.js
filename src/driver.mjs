@@ -29,7 +29,7 @@ class Output {
     let expected = this.asJson();
     if (contents !== expected) {
       let diff = JsDiff.diffLines(contents, expected);
-      console.log(chalk.blue(file + ':'));
+      console.log(chalk.blue(file));
       diff.forEach(function(part) {
         var color = part.added ? 'green' : part.removed ? 'red' : 'grey';
         process.stdout.write(chalk[color](part.value));
@@ -85,7 +85,7 @@ export function entry() {
   if (key == 'all') {
     for (let [name, f] of drivers) {
       if (mode == 'observe') {
-        console.log(chalk.blue(name + ':'));
+        console.log(chalk.blue(name));
       }
       let output = new Output(mode == 'observe');
       f(output);
