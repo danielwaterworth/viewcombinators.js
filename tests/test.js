@@ -2,7 +2,7 @@ let { Input, RValue, RStack, apply } = require("../src/main.js");
 let view = require("../src/main.js");
 let { group, driver, entry, expectException } = require("./driver.js");
 
-require('./makeReactive.js')
+require('./make_reactive.js')
 require('./rmap.js')
 
 group('mapValue', () => {

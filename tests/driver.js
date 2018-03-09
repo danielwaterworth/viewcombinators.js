@@ -48,7 +48,7 @@ let context = [];
 
 function insertPoint(key, value) {
   if (points.has(key)) {
-    points.set(key, () => { console.error('ambiguous'); });
+    points.set(key, [null, () => { console.error('ambiguous'); }]);
   } else {
     points.set(key, value);
   }
@@ -101,11 +101,13 @@ function entry() {
       let [name, f] = points.get(key);
       let output = new Output(mode == 'observe');
       f(output);
-      let fileName = 'expectations/' + name + '.json';
-      if (mode == 'record') {
-        output.record(fileName);
-      } else if (mode == 'check') {
-        output.check(fileName);
+      if (name) {
+        let fileName = 'expectations/' + name + '.json';
+        if (mode == 'record') {
+          output.record(fileName);
+        } else if (mode == 'check') {
+          output.check(fileName);
+        }
       }
     } else {
       console.error('no such driver');
