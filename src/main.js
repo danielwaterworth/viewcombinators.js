@@ -20,14 +20,15 @@ function register(name, f) {
   constructors.set(name, f);
 }
 
-export function makeReactive(desc) {
+function makeReactive(desc) {
   if (desc.type === undefined) {
     throw new Error("not a descriptor");
   }
   return constructors.get(desc.type)(desc);
 }
+module.exports.makeReactive = makeReactive;
 
-export class RValue {
+class RValue {
   constructor(value) {
     this.value = value;
   }
@@ -47,12 +48,13 @@ export class RValue {
     }
   }
 }
+module.exports.RValue = RValue;
 
 register('value', desc => {
   return new RValue(desc.value);
 });
 
-export class RStack {
+class RStack {
   constructor(value) {
     this.value = value;
   }
@@ -84,13 +86,14 @@ export class RStack {
     }
   }
 }
+module.exports.RStack = RStack;
 
 register('stack', desc => {
   let items = desc.items.map(makeReactive);
   return new RStack(items);
 });
 
-export class RMap {
+class RMap {
   constructor(initialValue) {
     this.value = initialValue;
   }
@@ -126,6 +129,7 @@ export class RMap {
     }
   }
 }
+module.exports.RMap = RMap;
 
 register('map', desc => {
   let keyedItemDescs =
@@ -137,7 +141,7 @@ register('map', desc => {
   return new RMap(items);
 });
 
-export class RRecord {
+class RRecord {
   constructor(initialValue) {
     this.value = initialValue;
   }
@@ -156,12 +160,13 @@ export class RRecord {
     return new RMap(new Map(this.value.entries()));
   }
 }
+module.exports.RRecord = RRecord;
 
 register('record', desc => {
   
 });
 
-export class Input {
+class Input {
   constructor(value) {
     this.value = value;
     this.invalidateHandlers = [];
@@ -201,8 +206,9 @@ export class Input {
     this.readyHandlers.push(handler);
   }
 }
+module.exports.Input = Input;
 
-export class MapValue {
+class MapValue {
   constructor(inputValues, f) {
     this.f = f;
     this.value = new RValue(f(inputValues[0].value));
@@ -220,11 +226,12 @@ export class MapValue {
   }
 }
 
-export function mapValue(f) {
+function mapValue(f) {
   return inputValues => new MapValue(inputValues, f);
 }
+module.exports.mapValue = mapValue;
 
-export class TransformStackValues {
+class TransformStackValues {
   constructor(inputValues, transformation) {
     let inputStack = inputValues[0];
     this.transformation = transformation;
@@ -267,11 +274,12 @@ export class TransformStackValues {
   }
 }
 
-export function transformStackValues(transformation) {
+function transformStackValues(transformation) {
   return inputValues => new TransformStackValues(inputValues, transformation);
 }
+module.exports.transformStackValues = transformStackValues;
 
-export class FilterStack {
+class FilterStack {
   constructor(inputValues, f) {
     this.inputStack = inputValues[0].copy();
     this.f = f;
@@ -335,11 +343,12 @@ export class FilterStack {
   }
 }
 
-export function filterStack(f) {
+function filterStack(f) {
   return inputValues => new FilterStack(inputValues, f);
 }
+module.exports.filterStack = filterStack;
 
-export class StackToMap {
+class StackToMap {
   constructor(inputValues) {
     this.inputStack = new RStack([]);
     this.lostValues = [];
@@ -414,24 +423,19 @@ export class StackToMap {
   }
 }
 
-export function stackToMap() {
+function stackToMap() {
   return inputValues => new StackToMap(inputValues);
 }
+module.exports.stackToMap = stackToMap;
 
-export class TransformMapValues {
+class TransformMapValues {
   constructor(inputValues, transformation) {
     this.inputValues = inputValues;
     this.transformation;
   }
 }
 
-// Required Combinators
-//
-// Stack of Events to current DB
-// DB -> View
-// View -> DOM
-
-export class Derived {
+class Derived {
   constructor(inputs, transformation) {
     this.inputs = inputs;
     let inputValues = inputs.map(input => input.getValue());
@@ -485,6 +489,6 @@ export class Derived {
   }
 }
 
-export function apply(inputs, transformation) {
+module.exports.apply = function(inputs, transformation) {
   return new Derived(inputs, transformation);
 }

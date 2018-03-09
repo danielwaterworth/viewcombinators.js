@@ -1,10 +1,10 @@
 'use strict';
 
-import util from 'util';
-import fs from 'fs';
-import JsDiff from 'diff';
-import chalk from 'chalk';
-import errorStackParser from 'error-stack-parser';
+let util = require('util');
+let fs = require('fs');
+let JsDiff = require('diff');
+let chalk = require('chalk');
+let errorStackParser = require('error-stack-parser');
 
 class Output {
   constructor(display) {
@@ -63,7 +63,7 @@ function callerFileAndLineNumber() {
   return [trace[2].fileName, trace[2].lineNumber];
 }
 
-export function driver(name, f) {
+function driver(name, f) {
   name = (context.concat([name])).join(':');
   let [file, line] = callerFileAndLineNumber();
   let value = [name, f];
@@ -77,7 +77,7 @@ export function driver(name, f) {
   drivers.push(value);
 }
 
-export function entry() {
+function entry() {
   let args = process.argv.slice(2);
   let mode = args[0];
 
@@ -113,8 +113,12 @@ export function entry() {
   }
 }
 
-export function group(name, f) {
+function group(name, f) {
   context.push(name);
   f();
   context.pop();
 }
+
+module.exports.group = group;
+module.exports.driver = driver;
+module.exports.entry = entry;

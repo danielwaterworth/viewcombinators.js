@@ -1,6 +1,6 @@
-import { Input, RValue, RStack, apply } from "./main.mjs";
-import * as view from "./main.mjs";
-import { group, driver, entry } from "./driver.mjs";
+let { Input, RValue, RStack, apply } = require("./main.js");
+let view = require("./main.js");
+let { group, driver, entry } = require("./driver.js");
 
 group('mapValue', () => {
   driver('1', console => {
