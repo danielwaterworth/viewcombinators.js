@@ -1,2 +1,6 @@
 #!/bin/bash
-node ./src/test.js $1 $2
+if [ $1 == "coverage" ]; then
+  ./node_modules/.bin/istanbul cover ./src/test.js check all
+else
+  node ./src/test.js $1 $2
+fi
