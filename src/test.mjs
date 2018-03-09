@@ -2,6 +2,19 @@ import { Input, RValue, RStack, apply } from "./main.mjs";
 import * as view from "./main.mjs";
 import { group, driver, entry } from "./driver.mjs";
 
+group('mapValue', () => {
+  driver('1', console => {
+    let value = new Input(new RValue(4));
+    let transformed =
+      apply([value], view.mapValue(x => x + 1));
+
+    console.log(transformed.getValue());
+
+    value.applyChanges([5]);
+    console.log(transformed.getValue());
+  });
+});
+
 group('stackToMap', () => {
   driver('1', console => {
     let events = new Input(new RStack([]));
