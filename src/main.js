@@ -141,30 +141,29 @@ register('map', desc => {
   return new RMap(items);
 });
 
-class RRecord {
-  constructor(initialValue) {
-    this.value = initialValue;
-  }
+// class RRecord {
+//   constructor(initialValue) {
+//     this.value = initialValue;
+//   }
 
-  applyChanges(changes) {
-    for (let change of changes) {
-      this.value.get(change.key).applyChanges(change.valueChanges);
-    }
-  }
+//   applyChanges(changes) {
+//     for (let change of changes) {
+//       this.value.get(change.key).applyChanges(change.valueChanges);
+//     }
+//   }
 
-  get(key) {
-    return this.value.get(key);
-  }
+//   get(key) {
+//     return this.value.get(key);
+//   }
 
-  copy() {
-    return new RMap(new Map(this.value.entries()));
-  }
-}
-module.exports.RRecord = RRecord;
+//   copy() {
+//     return new RMap(new Map(this.value.entries()));
+//   }
+// }
+// module.exports.RRecord = RRecord;
 
-register('record', desc => {
-  
-});
+// register('record', desc => {
+// });
 
 class Input {
   constructor(value) {
@@ -409,10 +408,10 @@ class StackToMap {
       } else if (change.type == 'pop') {
         outputChanges.push(this._handlePop());
       } else if (change.type == 'modify') {
-        this.inputStack.applyChanges([change]);
-        let record = this.inputStack.last().value;
+        let record = this.inputStack.last();
         outputChanges.push(this._handlePop());
-        outputChanges.push(this._handlePush(record));
+        record.applyChanges(change.valueChanges);
+        outputChanges.push(this._handlePush(record.value));
       }
     }
     return outputChanges;
@@ -428,12 +427,12 @@ function stackToMap() {
 }
 module.exports.stackToMap = stackToMap;
 
-class TransformMapValues {
-  constructor(inputValues, transformation) {
-    this.inputValues = inputValues;
-    this.transformation;
-  }
-}
+// class TransformMapValues {
+//   constructor(inputValues, transformation) {
+//     this.inputValues = inputValues;
+//     this.transformation;
+//   }
+// }
 
 class Derived {
   constructor(inputs, transformation) {

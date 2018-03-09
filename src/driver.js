@@ -119,6 +119,16 @@ function group(name, f) {
   context.pop();
 }
 
+function expectException(f) {
+  try {
+    f();
+  } catch (e) {
+    return e;
+  }
+  throw new Error("no exception");
+}
+module.exports.expectException = expectException;
+
 module.exports.group = group;
 module.exports.driver = driver;
 module.exports.entry = entry;
