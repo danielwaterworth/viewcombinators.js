@@ -1,75 +1,9 @@
-let { Input, RValue, RStack, apply } = require("./main.js");
-let view = require("./main.js");
+let { Input, RValue, RStack, apply } = require("../src/main.js");
+let view = require("../src/main.js");
 let { group, driver, entry, expectException } = require("./driver.js");
 
-group('RMap', () => {
-  driver('copy', console => {
-    let m =
-      view.makeReactive({
-        'type': 'map',
-        'items': new Map([
-          ['foo', {
-            'type': 'value',
-            'value': 4
-          }]
-        ])
-      });
-    let m2 = m.copy();
-    m.applyChanges([
-      {
-        'type': 'set',
-        'key': 'foo',
-        'value': {
-          'type': 'value',
-          'value': 5
-        }
-      }
-    ]);
-    console.log(m.copy());
-    console.log(m2.copy());
-  });
-
-  driver('delete', console => {
-    let m =
-      view.makeReactive({
-        'type': 'map',
-        'items': new Map([
-          ['foo', {
-            'type': 'value',
-            'value': 4
-          }]
-        ])
-      });
-    m.applyChanges([
-      {
-        'type': 'delete',
-        'key': 'foo'
-      }
-    ]);
-    console.log(m);
-  });
-
-  driver('modify', console => {
-    let m =
-      view.makeReactive({
-        'type': 'map',
-        'items': new Map([
-          ['foo', {
-            'type': 'value',
-            'value': 4
-          }]
-        ])
-      });
-    m.applyChanges([
-      {
-        'type': 'modify',
-        'key': 'foo',
-        'valueChanges': [5]
-      }
-    ]);
-    console.log(m);
-  });
-});
+require('./makeReactive.js')
+require('./rmap.js')
 
 group('mapValue', () => {
   driver('1', console => {
@@ -84,7 +18,7 @@ group('mapValue', () => {
   });
 });
 
-driver('derivedTwice', () => {
+driver('derivedTwice', console => {
   let value = new Input(new RValue(4));
   let transformed1 =
     apply([value], view.mapValue(x => x + 1));
@@ -264,46 +198,6 @@ group('filterStack', () => {
       },
     ]);
     console.log(transformed.getValue());
-  });
-});
-
-group('makeReactive', () => {
-  driver('value', console => {
-    let value = view.makeReactive({'type': 'value', 'value': 5});
-    console.log(value);
-    console.log(value.toDescriptor());
-  });
-
-  driver('stack', console => {
-    let value =
-      view.makeReactive({
-        'type': 'stack',
-        'items': [
-          {'type': 'value', 'value': 5},
-        ]
-      });
-    console.log(value);
-    console.log(value.toDescriptor());
-  });
-
-  driver('map', console => {
-    let value =
-      view.makeReactive({
-        'type': 'map',
-        'items': new Map([
-          ['foo', {'type': 'value', 'value': 4}],
-        ])
-      });
-    console.log(value);
-    console.log(value.toDescriptor());
-  });
-
-  driver('invalid', console => {
-    let e =
-      expectException(() => {
-        view.makeReactive({});
-      });
-    console.log(e.message);
   });
 });
 

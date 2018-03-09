@@ -1,1 +1,4 @@
-[]
+[
+    "RValue { value: 6 }",
+    "RValue { value: 7 }"
+]

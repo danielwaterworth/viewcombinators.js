@@ -1,6 +1,6 @@
 #!/bin/bash
 if [ $1 == "coverage" ]; then
-  ./node_modules/.bin/istanbul cover ./src/test.js check all
+  ./node_modules/.bin/istanbul cover ./tests/test.js check all
 else
-  node ./src/test.js $1 $2
+  node ./tests/test.js $1 $2
 fi
