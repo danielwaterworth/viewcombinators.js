@@ -242,7 +242,7 @@ export class TransformStackValues {
         this.transforms.push(this.transformation([initial]));
         outputChanges.push({
           'type': 'push',
-          'value': last(this.transforms).getValue()
+          'value': last(this.transforms).getValue().toDescriptor()
         })
       } else if (change.type == 'pop') {
         this.transforms.pop();
