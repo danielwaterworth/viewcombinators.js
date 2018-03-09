@@ -1,0 +1,7 @@
+[
+    "RStack { value: [ RValue { value: 4 } ] }",
+    "RStack { value: [ RValue { value: 4 }, RValue { value: 3 } ] }",
+    "RStack { value: [ RValue { value: 4 } ] }",
+    "RStack { value: [ RValue { value: 4 } ] }",
+    "RStack { value: [] }"
+]

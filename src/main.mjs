@@ -275,7 +275,7 @@ export class FilterStack {
   constructor(inputValues, f) {
     this.inputStack = inputValues[0].copy();
     this.f = f;
-    this.results = inputStack.value.map(f);
+    this.results = this.inputStack.value.map(f);
     this.value = new RStack(this.inputStack.value.filter(f));
   }
 
@@ -287,7 +287,7 @@ export class FilterStack {
         let result = this.f(change.value);
         this.results.push(result);
         if (result) {
-          let outputChange = {'type': 'push', 'value': change.value.copy()};
+          let outputChange = {'type': 'push', 'value': change.value};
           outputChanges.push(outputChange);
         }
       } else if (change.type == 'pop') {
@@ -319,7 +319,7 @@ export class FilterStack {
           if (result) {
             let outputChange = {
               'type': 'push',
-              'value': this.inputStack.last().copy()
+              'value': this.inputStack.last().toDescriptor()
             }
             outputChanges.push(outputChange);
           }
