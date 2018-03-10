@@ -278,6 +278,50 @@ function transformStackValues(transformation) {
 }
 module.exports.transformStackValues = transformStackValues;
 
+class MapStackValues {
+  constructor(inputValues, f) {
+    this.inputStack = inputValues[0].copy();
+    this.f = f;
+    this.value =
+      new RStack(this.inputStack.value.map(f));
+  }
+
+  applyInputsChanges(changes) {
+    let outputChanges = [];
+    for (let change of changes[0]) {
+      this.inputStack.applyChanges([change]);
+      if (change.type == 'push') {
+        let value = this.f(makeReactive(change.value)).toDescriptor();
+        outputChanges.push({
+          'type': 'push',
+          'value': value
+        });
+      } else if (change.type == 'pop') {
+        outputChanges.push({'type': 'pop'});
+      } else if (change.type == 'modify') {
+        let lastValue = this.inputStack.last();
+        lastValue = this.f(lastValue);
+        outputChanges.push({'type': 'pop'});
+        outputChanges.push({
+          'type': 'push',
+          'value': lastValue.toDescriptor()
+        });
+      }
+    }
+    this.value.applyChanges(outputChanges);
+    return outputChanges;
+  }
+
+  getValue() {
+    return this.value;
+  }
+}
+
+function mapStackValues(f) {
+  return inputValues => new MapStackValues(inputValues, f);
+}
+module.exports.mapStackValues = mapStackValues;
+
 class FilterStack {
   constructor(inputValues, f) {
     this.inputStack = inputValues[0].copy();
