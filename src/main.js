@@ -1,18 +1,7 @@
 'use strict';
 
-function last(arr) {
-  return arr[arr.length - 1];
-}
-
-function* mapIterator(iterator, mapping) {
-  while (true) {
-    let result = iterator.next();
-    if (result.done) {
-      break;
-    }
-    yield mapping(result.value);
-  }
-}
+let { mapIterator, last } = require('./util.js');
+let show = require('./show.js');
 
 let constructors = new Map();
 
@@ -46,6 +35,21 @@ class RValue {
       'type': 'value',
       'value': this.value
     }
+  }
+
+  showSingleLine(output) {
+    output.log("RValue { value: ")
+    output.log(JSON.stringify(this.value));
+    output.log(" }");
+  }
+
+  showMultiLine(output) {
+    output.log("RValue {");
+    output.indent(() => {
+      output.log("\nvalue: ")
+      output.log(JSON.stringify(this.value));
+    });
+    output.log("\n}");
   }
 }
 module.exports.RValue = RValue;
@@ -84,6 +88,23 @@ class RStack {
       'type': 'stack',
       'items': this.value.map(x => x.toDescriptor())
     }
+  }
+
+  showSingleLine(output) {
+    output.log("RStack { items: ");
+    let showList = new show.ShowList(this.value);
+    showList.showSingleLine(output);
+    output.log(" }");
+  }
+
+  showMultiLine(output) {
+    output.log("RStack {");
+    output.indent(() => {
+      output.log("\nitems: ");
+      let showList = new show.ShowList(this.value);
+      output.show(showList);
+    });
+    output.log("\n}");
   }
 }
 module.exports.RStack = RStack;
@@ -127,6 +148,23 @@ class RMap {
       'type': 'map',
       'items': new Map(mapIterator(this.value.entries(), ([key, value]) => [key, value.toDescriptor()]))
     }
+  }
+
+  showSingleLine(output) {
+    output.log("RMap { items: ");
+    let showMap = new show.ShowMap(this.value);
+    showMap.showSingleLine(output);
+    output.log(" }");
+  }
+
+  showMultiLine(output) {
+    output.log("RMap {");
+    output.indent(() => {
+      output.log("\nitems: ");
+      let showMap = new show.ShowMap(this.value);
+      output.show(showMap);
+    });
+    output.log("\n}");
   }
 }
 module.exports.RMap = RMap;
@@ -470,6 +508,56 @@ function stackToMap() {
   return inputValues => new StackToMap(inputValues);
 }
 module.exports.stackToMap = stackToMap;
+
+class GroupStackBy {
+  constructor(inputValues, f) {
+    this.inputStack = inputValues[0].copy();
+    this.f = f;
+    this.value = new RMap(new Map());
+    for (let value of this.inputStack.value) {
+      this._handlePush(value);
+    }
+  }
+
+  applyInputsChanges(changes) {
+    for (let change of changes[0]) {
+
+    }
+  }
+
+  _handlePush(value) {
+    let changes = [];
+    let key = this.f(value);
+    if (!this.value.has(key)) {
+      changes.push({
+        'type': 'set',
+        'key': key,
+        'value': {
+          'type': 'stack',
+          'items': []
+        }
+      });
+    }
+    changes.push({
+      'type': 'modify',
+      'key': key,
+      'valueChanges': [
+        {'type': 'push', 'value': value.toDescriptor()}
+      ]
+    });
+    this.value.applyChanges(changes);
+    return changes;
+  }
+
+  getValue() {
+    return this.value;
+  }
+}
+
+function groupStackBy(f) {
+  return inputValues => new GroupStackBy(inputValues, f);
+}
+module.exports.groupStackBy = groupStackBy;
 
 // class TransformMapValues {
 //   constructor(inputValues, transformation) {

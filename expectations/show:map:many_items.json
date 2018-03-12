@@ -1,0 +1,3 @@
+[
+    "RMap {\n  items: {\n    foo: RValue { value: 4 },\n    bar: RValue { value: 5 },\n    baz: RValue { value: 6 }\n  }\n}"
+]

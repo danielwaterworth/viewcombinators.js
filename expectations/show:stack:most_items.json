@@ -1,0 +1,3 @@
+[
+    "RStack {\n  items: [\n    RValue { value: 4 },\n    RValue { value: 5 },\n    RValue { value: 6 },\n    RValue { value: 7 },\n    RValue { value: 8 }\n  ]\n}"
+]
