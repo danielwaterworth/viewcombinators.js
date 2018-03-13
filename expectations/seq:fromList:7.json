@@ -1,0 +1,3 @@
+[
+    "Branch3 {\n  x0: Branch2 { x0: Leaf { x: 1 }, s0: 1, x1: Leaf { x: 2 }, s1: 2, depth: 2 },\n  s0: 2,\n  x1: Branch2 { x0: Leaf { x: 3 }, s0: 1, x1: Leaf { x: 4 }, s1: 2, depth: 2 },\n  s1: 4,\n  x2: Branch2 { x0: Leaf { x: 5 }, s0: 1, x1: Leaf { x: 6 }, s1: 2, depth: 2 },\n  s2: 6,\n  depth: 3 }"
+]
