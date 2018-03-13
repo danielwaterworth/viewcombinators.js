@@ -79,6 +79,10 @@ class RStack {
     return last(this.value);
   }
 
+  size() {
+    return this.value.length;
+  }
+
   copy() {
     return new RStack(this.value.map(x => x.copy()));
   }
@@ -144,9 +148,15 @@ class RMap {
   }
 
   toDescriptor() {
+    let items =
+      mapIterator(
+        this.value.entries(),
+        ([key, value]) => [key, value.toDescriptor()]
+      );
+
     return {
       'type': 'map',
-      'items': new Map(mapIterator(this.value.entries(), ([key, value]) => [key, value.toDescriptor()]))
+      'items': new Map(items)
     }
   }
 
@@ -165,6 +175,12 @@ class RMap {
       output.show(showMap);
     });
     output.log("\n}");
+  }
+
+  toString() {
+    let output = new show.Output();
+    output.show(this);
+    return output.finish();
   }
 }
 module.exports.RMap = RMap;
@@ -520,9 +536,101 @@ class GroupStackBy {
   }
 
   applyInputsChanges(changes) {
+    let outputChanges = [];
     for (let change of changes[0]) {
-
+      let roundChanges = [];
+      if (change.type == 'push') {
+        let value = makeReactive(change.value)
+        let key = this.f(value);
+        if (!this.value.has(key)) {
+          roundChanges.push({
+            'type': 'set',
+            'key': key,
+            'value': {
+              'type': 'stack',
+              'items': []
+            }
+          });
+        }
+        roundChanges.push({
+          'type': 'modify',
+          'key': key,
+          'valueChanges': [
+            {'type': 'push', 'value': change.value},
+          ]
+        });
+        this.inputStack.applyChanges([change]);
+      } else if (change.type == 'pop') {
+        let value = this.inputStack.last();
+        let key = this.f(value);
+        let stack = this.value.get(key)
+        if (stack.size() == 1) {
+          roundChanges.push({
+            'type': 'delete',
+            'key': key
+          });
+        } else {
+          roundChanges.push({
+            'type': 'modify',
+            'key': key,
+            'valueChanges': [
+              {'type': 'pop'}
+            ]
+          });
+        }
+        this.inputStack.applyChanges([change]);
+      } else if (change.type == 'modify') {
+        let prevKey = this.f(this.inputStack.last());
+        this.inputStack.applyChanges([change]);
+        let newKey = this.f(this.inputStack.last());
+        if (prevKey == newKey) {
+          roundChanges.push({
+            'type': 'modify',
+            'key': prevKey,
+            'valueChanges': [{
+              'type': 'modify',
+              'valueChanges': change.valueChanges
+            }]
+          });
+        } else {
+          let stack = this.value.get(prevKey);
+          if (stack.size() == 1) {
+            roundChanges.push({
+              'type': 'delete',
+              'key': prevKey
+            });
+          } else {
+            roundChanges.push({
+              'type': 'modify',
+              'key': prevKey,
+              'valueChanges': [{
+                'type': 'pop'
+              }]
+            });
+          }
+          if (!this.value.has(newKey)) {
+            roundChanges.push({
+              'type': 'set',
+              'key': newKey,
+              'value': {
+                'type': 'stack',
+                'items': []
+              }
+            });
+          }
+          roundChanges.push({
+            'type': 'modify',
+            'key': newKey,
+            'valueChanges': [
+              {'type': 'push', 'value': this.inputStack.last().toDescriptor()},
+            ]
+          });
+        }
+      }
+      this.value.applyChanges(roundChanges);
+      outputChanges.push(...roundChanges);
     }
+    return outputChanges;
   }
 
   _handlePush(value) {
