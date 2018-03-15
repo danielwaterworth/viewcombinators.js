@@ -195,6 +195,32 @@ register('map', desc => {
   return new RMap(items);
 });
 
+class RSeq {
+  constructor(initialValue) {
+    this.value = initialValue;
+  }
+
+  applyChanges(changes) {
+    for (let change of changes) {
+      if (change.type == 'insert') {
+        throw 'not implemented';
+      } else if (change.type == 'delete') {
+        throw 'not implemented';
+      } else if (change.type == 'modify') {
+        throw 'not implemented';
+      } else if (change.type == 'move') {
+        throw 'not implemented';
+      }
+    }
+  }
+}
+module.exports.RSeq = RSeq;
+
+register('sequence', desc => {
+  let items = Seq.fromList(desc.items.map(makeReactive));
+  return new RSeq(items);
+});
+
 // class RRecord {
 //   constructor(initialValue) {
 //     this.value = initialValue;
