@@ -2,6 +2,7 @@
 
 let { mapIterator, last } = require('./util.js');
 let show = require('./show.js');
+let { Seq } = require ('./seq.js');
 
 let constructors = new Map();
 
@@ -209,13 +210,13 @@ class RSeq {
             makeReactive(change.value)
           );
       } else if (change.type == 'delete') {
-        this.value = this.value.deleteRange();
+        this.value = this.value.deleteRange(change.startAt, change.size);
       } else if (change.type == 'modify') {
         this.value.get(change.i).applyChanges(change.valueChanges);
       } else if (change.type == 'move') {
-        throw 'not implemented';
-      } else if (change.type == 'copy') {
-        throw 'not implemented';
+        let range = this.value.getRange(change.from, change.size);
+        this.value = this.value.deleteRange(change.from, change.size);
+        this.value = this.value.insertRange(change.to, range);
       }
     }
   }
@@ -556,6 +557,37 @@ function stackToMap() {
   return inputValues => new StackToMap(inputValues);
 }
 module.exports.stackToMap = stackToMap;
+
+class StackToSequence {
+  constructor(inputValues) {
+    this.value = new RSeq(Seq.empty());
+  }
+
+  _handlePush(x) {
+    
+  }
+
+  applyInputsChanges(changes) {
+    for (let change of changes[0]) {
+      if (change.type == 'push') {
+
+      } else if (change.type == 'pop') {
+
+      } else if (change.type == 'modify') {
+
+      }
+    }
+  }
+
+  getValue() {
+    return this.value;
+  }
+}
+
+function stackToSequence() {
+  return inputValues => new StackToSequence(inputValues);
+}
+module.exports.stackToSequence = stackToSequence;
 
 class GroupStackBy {
   constructor(inputValues, f) {
