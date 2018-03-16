@@ -336,4 +336,83 @@ group('seq', () => {
       });
     });
   });
+
+  group('insertAt', () => {
+    driver('1', console => {
+      let v = Seq.fromList([]);
+      console.log(v.insertAt(0, 1));
+    });
+
+    driver('2', console => {
+      let v = Seq.fromList([1]);
+      console.log(v.insertAt(1, 2));
+    });
+
+    driver('3', console => {
+      let v = Seq.fromList([2]);
+      console.log(v.insertAt(0, 1));
+    });
+  });
+
+  group('toList', () => {
+    driver('1', console => {
+      console.log(Seq.fromList([]).toList());
+    });
+
+    driver('2', console => {
+      console.log(Seq.fromList([1]).toList());
+    });
+
+    driver('3', console => {
+      console.log(Seq.fromList([1, 2]).toList());
+    });
+
+    driver('4', console => {
+      console.log(Seq.fromList([1, 2, 3]).toList());
+    });
+  });
+
+  group('head', () => {
+    driver('1', console => {
+      let e =
+        expectException(() => {
+          Seq.fromList([]).head();
+        });
+      console.log(e.name + ': ' + e.message);
+    });
+
+    driver('2', console => {
+      console.log(Seq.fromList([1]).head());
+    });
+
+    driver('3', console => {
+      console.log(Seq.fromList([1, 2]).head());
+    });
+
+    driver('4', console => {
+      console.log(Seq.fromList([1, 2, 3]).head());
+    });
+  });
+
+  group('get', () => {
+    driver('1', console => {
+      let e =
+        expectException(() => {
+          Seq.empty().get(0);
+        });
+      console.log(e.name + ': ' + e.message);
+    });
+
+    driver('2', console => {
+      console.log(Seq.fromList([1]).get(0));
+    });
+
+    driver('3', console => {
+      let e =
+        expectException(() => {
+          Seq.fromList([1]).get(1);
+        });
+      console.log(e.name + ': ' + e.message);
+    });
+  });
 });
