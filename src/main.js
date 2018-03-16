@@ -203,11 +203,15 @@ class RSeq {
   applyChanges(changes) {
     for (let change of changes) {
       if (change.type == 'insert') {
-        throw 'not implemented';
+        this.value =
+          this.value.insertAt(
+            change.index,
+            makeReactive(change.value)
+          );
       } else if (change.type == 'delete') {
-        throw 'not implemented';
+        this.value = this.value.deleteRange();
       } else if (change.type == 'modify') {
-        throw 'not implemented';
+        this.value.get(change.i).applyChanges(change.valueChanges);
       } else if (change.type == 'move') {
         throw 'not implemented';
       } else if (change.type == 'copy') {

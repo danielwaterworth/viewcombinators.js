@@ -49,6 +49,10 @@ class Seq {
       ([a, b]) => new Branch2(a, b)
     );
   }
+
+  head() {
+    return this.get(0);
+  }
 }
 module.exports.Seq = Seq;
 
@@ -96,10 +100,6 @@ class Branch2 extends Seq {
     } else {
       throw new RangeError('not enough items');
     }
-  }
-
-  head() {
-    return this.x0.head();
   }
 
   joinAfter(x) {
@@ -179,6 +179,16 @@ class Branch2 extends Seq {
       throw new RangeError('out of range');
     }
   }
+
+  get(i) {
+    if (i < this.s0) {
+      return this.x0.get(i);
+    } else if (i < this.s1) {
+      return this.x1.get(i - this.s0);
+    } else {
+      throw new RangeError('out of range');
+    }
+  }
 }
 
 class Branch3 extends Seq {
@@ -235,10 +245,6 @@ class Branch3 extends Seq {
     } else {
       throw new RangeError('not enough items');
     }
-  }
-
-  head() {
-    return this.x0.head();
   }
 
   joinAfter(x) {
@@ -352,6 +358,18 @@ class Branch3 extends Seq {
       throw new RangeError('out of range');
     }
   }
+
+  get(i) {
+    if (i < this.s0) {
+      return this.x0.get(i);
+    } else if (i < this.s1) {
+      return this.x1.get(i - this.s0);
+    } else if (i < this.s2) {
+      return this.x2.get(i - this.s1);
+    } else {
+      throw new RangeError('out of range');
+    }
+  }
 }
 
 class Leaf extends Seq {
@@ -388,10 +406,6 @@ class Leaf extends Seq {
     }
   }
 
-  head() {
-    return this.x;
-  }
-
   joinAfter(x) {
     throw "not reachable";
   }
@@ -411,6 +425,14 @@ class Leaf extends Seq {
         this,
         new Leaf(x)
       ]);
+    } else {
+      throw new RangeError('out of range');
+    }
+  }
+
+  get(i) {
+    if (i == 0) {
+      return this.x;
     } else {
       throw new RangeError('out of range');
     }
@@ -460,5 +482,9 @@ class Empty extends Seq {
     } else {
       throw new RangeError('out of range');
     }
+  }
+
+  get(i) {
+    throw new RangeError('out of range');
   }
 }
