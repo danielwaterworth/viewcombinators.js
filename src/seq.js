@@ -41,6 +41,14 @@ class Seq {
     }
     return output;
   }
+
+  insertAt(i, x) {
+    return either(
+      this._insertAt(i, x),
+      x => x,
+      ([a, b]) => new Branch2(a, b)
+    );
+  }
 }
 module.exports.Seq = Seq;
 
@@ -151,6 +159,24 @@ class Branch2 extends Seq {
             )
           )
       );
+    }
+  }
+
+  _insertAt(i, x) {
+    if (i < this.s0) {
+      return either(
+        this._insertAt(i, this.x0),
+        x0 => new Branch2(x0, this.x1),
+        ([x0a, x0b]) => new Branch3(x0a, x0b, this.x1)
+      );
+    } else if (i < this.s1) {
+      return either(
+        this._insertAt(i - this.s0, this.x1),
+        x1 => left(new Branch2(this.x0, x1)),
+        ([x1a, x1b]) => left(new Branch3(this.x0, x1a, x1b))
+      );
+    } else {
+      throw new RangeError('out of range');
     }
   }
 }
@@ -290,6 +316,42 @@ class Branch3 extends Seq {
       )
     }
   }
+
+  _insertAt(i, x) {
+    if (i < this.s0) {
+      return either(
+        this.x0._insertAt(i, x),
+        x0 => left(new Branch3(x0, this.x1, this.x2)),
+        ([x0a, x0b]) =>
+          right(
+            new Branch2(x0a, x0b),
+            new Branch2(this.x1, this.x2)
+          )
+      );
+    } else if (i < this.s1) {
+      return either(
+        this.x1._insertAt(i - this.s0, x),
+        x1 => left(new Branch3(this.x0, x1, this.x2)),
+        ([x1a, x1b]) =>
+          right(
+            new Branch2(this.x0, x1a),
+            new Branch2(x1b, this.x2)
+          )
+      );
+    } else if (i < this.s2) {
+      return either(
+        this.x2._insertAt(i - this.s1, x),
+        x2 => left(new Branch3(this.x0, this.x1, x2)),
+        ([x2a, x2b]) =>
+          right(
+            new Branch2(this.x0, this.x1),
+            new Branch2(x2a, x2b)
+          )
+      );
+    } else {
+      throw new RangeError('out of range');
+    }
+  }
 }
 
 class Leaf extends Seq {
@@ -337,6 +399,22 @@ class Leaf extends Seq {
   joinBefore(x) {
     throw "not reachable";
   }
+
+  _insertAt(i, x) {
+    if (i == 0) {
+      return right([
+        new Leaf(x),
+        this
+      ]);
+    } else if (i == 1) {
+      return right([
+        this,
+        new Leaf(x)
+      ]);
+    } else {
+      throw new RangeError('out of range');
+    }
+  }
 }
 
 class Empty extends Seq {
@@ -374,5 +452,13 @@ class Empty extends Seq {
 
   joinBefore(x) {
     throw "not reachable";
+  }
+
+  _insertAt(i, x) {
+    if (i == 0) {
+      return left(new Leaf(x));
+    } else {
+      throw new RangeError('out of range');
+    }
   }
 }

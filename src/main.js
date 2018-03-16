@@ -210,6 +210,8 @@ class RSeq {
         throw 'not implemented';
       } else if (change.type == 'move') {
         throw 'not implemented';
+      } else if (change.type == 'copy') {
+        throw 'not implemented';
       }
     }
   }
