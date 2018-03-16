@@ -53,6 +53,12 @@ class Seq {
   head() {
     return this.get(0);
   }
+
+  toList() {
+    let x = [];
+    this._toList(x);
+    return x;
+  }
 }
 module.exports.Seq = Seq;
 
@@ -188,6 +194,11 @@ class Branch2 extends Seq {
     } else {
       throw new RangeError('out of range');
     }
+  }
+
+  _toList(x) {
+    this.x0._toList(x);
+    this.x1._toList(x);
   }
 }
 
@@ -370,6 +381,12 @@ class Branch3 extends Seq {
       throw new RangeError('out of range');
     }
   }
+
+  _toList(x) {
+    this.x0._toList(x);
+    this.x1._toList(x);
+    this.x2._toList(x);
+  }
 }
 
 class Leaf extends Seq {
@@ -437,6 +454,10 @@ class Leaf extends Seq {
       throw new RangeError('out of range');
     }
   }
+
+  _toList(x) {
+    x.push(this.x);
+  }
 }
 
 class Empty extends Seq {
@@ -483,6 +504,8 @@ class Empty extends Seq {
       throw new RangeError('out of range');
     }
   }
+
+  _toList(x) {}
 
   get(i) {
     throw new RangeError('out of range');
