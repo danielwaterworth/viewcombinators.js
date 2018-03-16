@@ -200,6 +200,13 @@ class Branch2 extends Seq {
     this.x0._toList(x);
     this.x1._toList(x);
   }
+
+  map(f) {
+    return new Branch2(
+      this.x0.map(f),
+      this.x1.map(f)
+    )
+  }
 }
 
 class Branch3 extends Seq {
@@ -387,6 +394,14 @@ class Branch3 extends Seq {
     this.x1._toList(x);
     this.x2._toList(x);
   }
+
+  map(f) {
+    return new Branch3(
+      this.x0.map(f),
+      this.x1.map(f),
+      this.x2.map(f)
+    )
+  }
 }
 
 class Leaf extends Seq {
@@ -458,6 +473,10 @@ class Leaf extends Seq {
   _toList(x) {
     x.push(this.x);
   }
+
+  map(f) {
+    return new Leaf(f(this.x));
+  }
 }
 
 class Empty extends Seq {
@@ -509,5 +528,9 @@ class Empty extends Seq {
 
   get(i) {
     throw new RangeError('out of range');
+  }
+
+  map(f) {
+    return this;
   }
 }
