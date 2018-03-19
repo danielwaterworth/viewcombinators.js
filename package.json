@@ -1,8 +1,13 @@
 {
+  "name": "viewcombinators",
+  "version": "0.0.1",
   "dependencies": {
     "chalk": "^2.3.2",
     "diff": "^3.5.0",
-    "error-stack-parser": "^2.0.1",
+    "error-stack-parser": "^2.0.1"
+  },
+  "devDependencies": {
     "istanbul": "^0.4.5"
-  }
+  },
+  "main": "src/main.js"
 }
