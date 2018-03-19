@@ -70,6 +70,10 @@ class Branch2 extends Seq {
     this.x1 = x1;
     this.s1 = x0.size + x1.size;
     this.depth = x0.depth + 1;
+    this.parent = null;
+
+    this.x0.parent = this;
+    this.x1.parent = this;
   }
 
   get size() {
@@ -219,6 +223,11 @@ class Branch3 extends Seq {
     this.x2 = x2;
     this.s2 = x0.size + x1.size + x2.size;
     this.depth = x0.depth + 1;
+    this.parent = null;
+
+    this.x0.parent = this;
+    this.x1.parent = this;
+    this.x2.parent = this;
   }
 
   get size() {
@@ -408,6 +417,7 @@ class Leaf extends Seq {
   constructor(x) {
     super()
     this.x = x;
+    this.parent = null;
   }
 
   get size() {
@@ -486,6 +496,10 @@ class Empty extends Seq {
 
   get depth() {
     return 0;
+  }
+
+  get parent() {
+    return null;
   }
 
   take(n) {
