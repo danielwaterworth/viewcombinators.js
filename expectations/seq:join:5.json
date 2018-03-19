@@ -1,5 +1,5 @@
 [
-    "Branch2 {\n  x0: Branch2 { x0: Leaf { x: 1 }, s0: 1, x1: Leaf { x: 2 }, s1: 2, depth: 2 },\n  s0: 2,\n  x1: \n   Branch3 {\n     x0: Leaf { x: 3 },\n     s0: 1,\n     x1: Leaf { x: 4 },\n     s1: 2,\n     x2: Leaf { x: 5 },\n     s2: 3,\n     depth: 2 },\n  s1: 5,\n  depth: 3 }",
+    "Branch2 {\n  x0: \n   Branch2 {\n     x0: Leaf { x: 1, parent: [Circular] },\n     s0: 1,\n     x1: Leaf { x: 2, parent: [Circular] },\n     s1: 2,\n     depth: 2,\n     parent: [Circular] },\n  s0: 2,\n  x1: \n   Branch3 {\n     x0: Leaf { x: 3, parent: [Circular] },\n     s0: 1,\n     x1: Leaf { x: 4, parent: [Circular] },\n     s1: 2,\n     x2: Leaf { x: 5, parent: [Circular] },\n     s2: 3,\n     depth: 2,\n     parent: [Circular] },\n  s1: 5,\n  depth: 3,\n  parent: null }",
     "5",
     "3"
 ]

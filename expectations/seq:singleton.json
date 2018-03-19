@@ -1,5 +1,5 @@
 [
-    "Leaf { x: 1 }",
+    "Leaf { x: 1, parent: null }",
     "1",
     "1"
 ]

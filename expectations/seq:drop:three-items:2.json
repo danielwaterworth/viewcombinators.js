@@ -1,3 +1,3 @@
 [
-    "Branch2 { x0: Leaf { x: 2 }, s0: 1, x1: Leaf { x: 3 }, s1: 2, depth: 2 }"
+    "Branch2 {\n  x0: Leaf { x: 2, parent: [Circular] },\n  s0: 1,\n  x1: Leaf { x: 3, parent: [Circular] },\n  s1: 2,\n  depth: 2,\n  parent: null }"
 ]
