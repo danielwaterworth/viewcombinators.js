@@ -1,5 +1,6 @@
 let { entry } = require("./driver.js");
 
+require('./biseq.js')
 require('./derived_twice.js')
 require('./filter_stack.js')
 require('./group_stack_by.js')

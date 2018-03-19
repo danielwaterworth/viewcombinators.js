@@ -50,6 +50,17 @@ class Seq {
     );
   }
 
+  insertSequenceAt(x, i) {
+    if (x.constructor === Empty) {
+      return this;
+    } else {
+      let before = this.take(i);
+      let after = this.drop(i);
+      let output = Seq.join(Seq.join(before, x), after);
+      return output;
+    }
+  }
+
   head() {
     return this.get(0);
   }
@@ -58,6 +69,14 @@ class Seq {
     let x = [];
     this._toList(x);
     return x;
+  }
+
+  getPosition() {
+    if (this.parent === null) {
+      return 0;
+    } else {
+      return this.parent._positionWithin(this);
+    }
   }
 }
 module.exports.Seq = Seq;
@@ -210,6 +229,17 @@ class Branch2 extends Seq {
       this.x0.map(f),
       this.x1.map(f)
     )
+  }
+
+  _positionWithin(x) {
+    let offset = this.getPosition();
+    if (x === this.x0) {
+      return offset;
+    } else if (x === this.x1) {
+      return offset + this.s0;
+    } else {
+      throw "doesn't appear in node";
+    }
   }
 }
 
@@ -411,6 +441,19 @@ class Branch3 extends Seq {
       this.x2.map(f)
     )
   }
+
+  _positionWithin(x) {
+    let offset = this.getPosition();
+    if (x === this.x0) {
+      return offset;
+    } else if (x === this.x1) {
+      return offset + this.s0;
+    } else if (x === this.x2) {
+      return offset + this.s1;
+    } else {
+      throw "doesn't appear in node";
+    }
+  }
 }
 
 class Leaf extends Seq {
@@ -482,6 +525,10 @@ class Leaf extends Seq {
 
   _toList(x) {
     x.push(this.x);
+  }
+
+  _positionWithin(x) {
+    throw "not reachable";
   }
 
   map(f) {
