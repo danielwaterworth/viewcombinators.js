@@ -59,6 +59,62 @@ register('value', desc => {
   return new RValue(desc.value);
 });
 
+class RLog {
+  constructor(value) {
+    this.value = value;
+  }
+
+  applyChanges(changes) {
+    for (let change of changes) {
+      if (change.type == 'push') {
+        this.value.push(makeReactive(change.value));
+      }
+    }
+  }
+
+  last() {
+    return last(this.value);
+  }
+
+  size() {
+    return this.value.length;
+  }
+
+  copy() {
+    return new RLog(this.value.map(x => x.copy()));
+  }
+
+  toDescriptor() {
+    return {
+      'type': 'log',
+      'items': this.value.map(x => x.toDescriptor())
+    }
+  }
+
+  showSingleLine(output) {
+    output.log("RLog { items: ");
+    let showList = new show.ShowList(this.value);
+    showList.showSingleLine(output);
+    output.log(" }");
+  }
+
+  showMultiLine(output) {
+    output.log("RLog {");
+    output.indent(() => {
+      output.log("\nitems: ");
+      let showList = new show.ShowList(this.value);
+      output.show(showList);
+    });
+    output.log("\n}");
+  }
+}
+module.exports.RLog = RLog;
+
+register('log', desc => {
+  let items = desc.items.map(makeReactive);
+  return new RLog(items);
+});
+
 class RStack {
   constructor(value) {
     this.value = value;
