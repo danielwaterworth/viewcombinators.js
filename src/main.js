@@ -350,6 +350,32 @@ class Input {
 }
 module.exports.Input = Input;
 
+class InputLog {
+  constructor() {
+    this.input = new Input(new RLog([]));
+  }
+
+  push(x) {
+    this.input.applyChanges([{
+      'type': 'push',
+      'value': x
+    }]);
+  }
+
+  onInvalidate(handler) {
+    this.input.onInvalidate(handler);
+  }
+
+  onReady(handler) {
+    this.input.onReady(handler);
+  }
+
+  getValue() {
+    return this.input.getValue();
+  }
+}
+module.exports.InputLog = InputLog;
+
 class MapValue {
   constructor(inputValues, f) {
     this.f = f;
