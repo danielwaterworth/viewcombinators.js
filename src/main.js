@@ -4,6 +4,8 @@ let { mapIterator, last } = require('./util.js');
 let show = require('./show.js');
 let { Seq } = require ('./seq.js');
 
+module.exports.Seq = Seq;
+
 let constructors = new Map();
 
 function register(name, f) {
