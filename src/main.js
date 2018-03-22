@@ -286,29 +286,30 @@ register('sequence', desc => {
   return new RSeq(items);
 });
 
-// class RRecord {
-//   constructor(initialValue) {
-//     this.value = initialValue;
-//   }
+class RRecord {
+  constructor(initialValue) {
+    this.value = initialValue;
+  }
 
-//   applyChanges(changes) {
-//     for (let change of changes) {
-//       this.value.get(change.key).applyChanges(change.valueChanges);
-//     }
-//   }
+  applyChanges(changes) {
+    for (let change of changes) {
+      this.value.get(change.key).applyChanges(change.valueChanges);
+    }
+  }
 
-//   get(key) {
-//     return this.value.get(key);
-//   }
+  get(key) {
+    return this.value.get(key);
+  }
 
-//   copy() {
-//     return new RMap(new Map(this.value.entries()));
-//   }
-// }
-// module.exports.RRecord = RRecord;
+  copy() {
+    return new RMap(new Map(this.value.entries()));
+  }
+}
+module.exports.RRecord = RRecord;
 
-// register('record', desc => {
-// });
+register('record', desc => {
+  return new RMap(new Map(desc.fields.entries()));
+});
 
 class Input {
   constructor(value) {
